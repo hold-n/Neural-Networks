@@ -1,2 +1,4 @@
 venv
 .*
+blobs
+__pycache__
