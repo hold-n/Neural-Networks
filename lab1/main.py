@@ -11,13 +11,18 @@ def shuffle_in_unison(a, b):
     np.random.shuffle(b)
 
 
-def load_image(name: str):
+def load_image(name: str, upscale=True):
     try:
         img = mpimg.imread(name)
-        return (img * 256).astype(int)
+        return (img * 256).astype(int) if upscale else img
     except Exception:
         print("Cannot read {}".format(name))
         return None
+
+
+def load_image_vector(name: str):
+    img = load_image(name, upscale=False)
+    return img.reshape(-1)
 
 
 def get_all_files(dir_name):
@@ -26,7 +31,7 @@ def get_all_files(dir_name):
             yield os.path.join(dirpath, name)
 
 
-def get_duplicates(names, images):
+def _get_duplicates(names, images):
     for name in names:
         current = load_image(name)
         if any(np.array_equal(current, image) for image in images):
@@ -39,7 +44,7 @@ def remove_test_duplicates():
         test_images = [load_image(f) for f in get_all_files(test_path)]
         train_path = os.path.join("../blobs/notMNIST_large/", label)
         train_files = get_all_files(train_path)
-        for d in get_duplicates(train_files, test_images):
+        for d in _get_duplicates(train_files, test_images):
             print("Removing {}".format(d))
             os.remove(d)
         print("Finished with {}".format(label))
