@@ -2,3 +2,4 @@ venv
 .*
 blobs
 __pycache__
+*.pdf
